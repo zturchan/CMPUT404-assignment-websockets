@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import flask
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask_sockets import Sockets
 import gevent
 from gevent import queue
@@ -79,7 +79,7 @@ def set_listener( entity, data ):
 
 def send_all(msg):
 	for listener in myWorld.listeners:
-		print listener
+		#print listener
 		listener.put(msg)
 
 def send_all_json(obj):
@@ -98,8 +98,12 @@ def read_ws(ws,client):
     		print "WS RECV: %s" % msg
     		if (msg is not None):
     			packet = json.loads(msg)
-    			print "between load and send"
-    			send_all_json( packet )
+    			#print packet.keys()[0]
+    			#print packet.values()[0]
+    			#myWorld.set(packet.keys()[0], packet.values()[0]);
+    			#print "between load and send"
+    			#send_all_json( myWorld.world() )
+    			send_all_json(packet)
     		else:
 				break
     except Exception as e:# WebSocketError as e:
@@ -110,11 +114,11 @@ def subscribe_socket(ws):
     '''Fufill the websocket URL of /subscribe, every update notify the
        websocket and read updates from the websocket '''
     client = Client()
-    print client
+    #print client
     myWorld.add_set_listener(client)
    
     g = gevent.spawn( read_ws, ws, client)
-    print myWorld.listeners
+    #print myWorld.listeners
     try:
     	while True:
     		msg = client.get()
