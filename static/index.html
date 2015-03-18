@@ -55,7 +55,21 @@ function drawCircle(context,entity) {
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
         arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        stroke();  
+        
+        	//Draw a screen-wide gradient for our world
+		var grd=createLinearGradient(0,0,W,0);
+		grd.addColorStop(0,"blue");
+		grd.addColorStop(0.5,"red");
+		grd.addColorStop(1,"yellow");
+
+		fillStyle=grd;
+
+		strokeStyle = fillStyle;
+       	arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+		fill();
         stroke();                                
+    	                             
     }
 }
 
@@ -268,16 +282,10 @@ function wsSetup() {
             debug("WebSocket Recv:" + msg.data);
             //update the world with whatever we receive
             var message = JSON.parse(msg.data);
-            //world = message;
-            //debug(message);
-            //world[Object.keys(message)[0]] = Object.values(message)[0];
             var key = Object.keys(message)[0];
-            console.log(key);
-            console.log(message[key]);
             world[key] = message[key];
             drawNextFrame();
-            update();
-            //console.log(message);           
+            update();          
         } catch (e) {
             console.log("ERROR socket on message: " + e);
         }
