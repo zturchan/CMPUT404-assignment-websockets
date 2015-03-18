@@ -48,8 +48,9 @@ class World:
 
     def update_listeners(self, entity):
         '''update the set listeners'''
+        data = json.dumps({entity: self.get(entity)})
         for listener in self.listeners:
-            listener(entity, self.get(entity))
+            listener.put(data)
 
     def clear(self):
         self.space = dict()
@@ -63,10 +64,11 @@ class World:
 class Client:
     def __init__(self):
         self.queue = queue.Queue()
+        self.put(json.dumps(myWorld.world()))
 
     def put(self, v):
         self.queue.put_nowait(v)
-
+	
     def get(self):
         return self.queue.get()
 
@@ -98,12 +100,10 @@ def read_ws(ws,client):
     		print "WS RECV: %s" % msg
     		if (msg is not None):
     			packet = json.loads(msg)
-    			#print packet.keys()[0]
-    			#print packet.values()[0]
-    			#myWorld.set(packet.keys()[0], packet.values()[0]);
-    			#print "between load and send"
-    			#send_all_json( myWorld.world() )
-    			send_all_json(packet)
+    			#send_all_json(packet)
+    			####
+    			for key in packet:
+    				myWorld.set(key, packet[key])
     		else:
 				break
     except Exception as e:# WebSocketError as e:

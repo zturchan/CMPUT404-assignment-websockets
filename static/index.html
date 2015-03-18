@@ -44,7 +44,6 @@ debug("Test");
 
 world = {};
 
-//XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
         beginPath();                
@@ -142,7 +141,6 @@ function addEntity(entity, data) {
     packet[entity] = data;
     //console.log(packet);
     socket.send(JSON.stringify(packet));
-    //XXX: Send a XHTML Request that updates the entity you just modified!
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -271,19 +269,22 @@ function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
-        //XXX: TODO What are you going to do here?
-        //Perhaps get the world?
+        //Get the world
+        //Since this will only be done once per session, using ajax is probably fine
+        var xhr = new XMLHttpRequest(); 
+		xhr.open('GET', 'http://'+host+'/world', false);
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
     };
     socket.onmessage = function(msg) {  
         try {
-            debug("WebSocket Recv:" + msg.data);
+            //debug("WebSocket Recv:" + msg.data);
             //update the world with whatever we receive
             var message = JSON.parse(msg.data);
-            var key = Object.keys(message)[0];
-            world[key] = message[key];
+            for (key in message) {
+            	world[key] = message[key];
+            } 
             drawNextFrame();
             update();          
         } catch (e) {
